@@ -1,14 +1,24 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
 public class Search {
     public static void main(String[] args) {
-        Location myLocation = new Location(5, 88);
-        System.out.println(myLocation);
+       char[][] grid = {
+        {'o', 'o', 'o', 'o', 'c', 'w', 'c', 'o'},
+        {'w', 'o', 'o', 'w', 'w', 'c', 'w', 'o'},
+        {'o', 'o', 'o', 'o', 'R', 'w', 'o', 'o'},
+        {'o', 'o', 'w', 'w', 'w', 'o', 'o', 'o'},
+        {'o', 'o', 'o', 'o', 'c', 'o', 'o', 'o'}
+        };
+
+    System.out.println(nearestCheese(grid));
+
     }
      /**
      * Finds the location of the nearest reachable cheese from the rat's position.
@@ -46,18 +56,34 @@ public class Search {
 
         Set<Location> visited = new HashSet<>();
 
+        Map<Location, Location> prevs = new HashMap<>(); // used for the previous locations
+
         while(!queue.isEmpty()) {
             Location current = queue.poll();
-            if (visited.contains(current)) {
-                continue;
-            }
+           
             if (maze[current.row()][current.col()] == 'c') {
-                return current;
+                List<Location> path = new ArrayList<>();
+                // path.add(current);
+
+                Location pointer = current;
+
+                while(!pointer.equals(start)) {
+                    path.add(pointer);
+                    pointer = prevs.get(pointer);
                 }
-                visited.add(current);
+
+                path.add(start);
+                System.out.println(path.reversed()); // gives a copy that is reversed
+                return current; // returns the location
+                }
                 
-            for (Location neighbor : neightbors(maze, current)) {
-                queue.add(neighbor);
+                
+            for (Location neighbor : neighbors(maze, current)) { // add all the neighbors
+                if (visited.contains(neighbor)) {
+                    // adding new neighbors to queue if not in visited
+                    queue.add(neighbor);  
+                    visited.add(neighbor); // add the visited  
+                    prevs.put(neighbor, current);
             }
         }
 
@@ -109,4 +135,5 @@ public class Search {
         } 
 
     }
+    
 
